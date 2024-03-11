@@ -40,16 +40,9 @@ public class Application {
 
 			Resource resource = resourceLoader.getResource("classpath:rag/terms-of-service.txt");
 
-			Function<List<Document>, List<Document>> metadataEnricher = docs -> docs.stream()
-					.map(doc -> {
-						doc.getMetadata().put("language", "en");
-						return doc;
-					}).toList();
-
 			// Ingest the document into the vector store
 			vectorStore
 					.accept(new TokenTextSplitter(30, 20, 1, 10000, true)
-							.andThen(metadataEnricher)
 							.apply(new TextReader(resource).get()));
 
 			Thread.sleep(3000);

@@ -1,6 +1,5 @@
 package ai.spring.demo.ai.playground.services;
 
-import java.time.LocalDate;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
