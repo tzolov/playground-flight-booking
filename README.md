@@ -16,3 +16,13 @@ This app shows how you can use [Spring AI](https://github.com/spring-projects/sp
 ## Running
 
 Run the app by running `Application.java` in your IDE or `mvn` in the command line.
+
+## Build Jar
+
+```shell
+./mvnw clean install -Pproduction
+```
+
+```shell
+java -jar ./target/playground-flight-booking-0.0.1-SNAPSHOT.jar
+```
