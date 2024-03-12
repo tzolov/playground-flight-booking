@@ -31,7 +31,7 @@ import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.stereotype.Service;
 
 /**
- * Simple, in memory, message chat history store.
+ * Simple, in memory, message chat history.
  *
  * @author Christian Tzolov
  */
@@ -40,68 +40,69 @@ public class ChatHistory {
 
 	private static final Logger logger = LoggerFactory.getLogger(ChatHistory.class);
 
-	private final Map<String, List<Message>> history;
+	private final Map<String, List<Message>> chatHistoryLog;
 
+	/**
+	 * Temporal storage used to aggregate streaming messages until the finishReason=STOP is received.
+	 */
 	private final Map<String, List<Message>> messageAggregations;
 
 	public ChatHistory() {
-		this.history = new ConcurrentHashMap<>();
+		this.chatHistoryLog = new ConcurrentHashMap<>();
 		this.messageAggregations = new ConcurrentHashMap<>();
 	}
 
-	private void addToHistory(String chatId, Message message) {
-		this.history.putIfAbsent(chatId, new ArrayList<>());
-		this.history.get(chatId).add(message);
-	}
-
-	private String chunkGroupId(String chatId, String messageId) {
-		return chatId + ":" + messageId;
-	}
-
 	/**
-	 * Aggregates all chunk messages into a single message and adds it to the chat history. Aggregation completes on
-	 * finishReason=STOP.
+	 * Messages are grouped by chatId and messageId. The streaming messages are aggregated until the finishReason=STOP
+	 * is received. Then the aggregations are collapsed in to a single assistant message. The user messages are
+	 * committed to the history as is.
+	 *
 	 * @param chatId the chat id
-	 * @param message the message chunk
+	 * @param message the message to add
 	 */
 	public void addMessage(String chatId, Message message) {
 
-		String messageId = getProperty(message, "id");
-		String chunkGroupId = chunkGroupId(chatId, messageId);
+		String groupId = toGroupId(chatId, message);
 
-		this.messageAggregations.putIfAbsent(chunkGroupId, new ArrayList<>());
+		this.messageAggregations.putIfAbsent(groupId, new ArrayList<>());
 
 		if (this.messageAggregations.keySet().size() > 1) {
 			logger.warn("Multiple active sessions: " + this.messageAggregations.keySet());
 		}
 
-		this.messageAggregations.get(chunkGroupId).add(message);
+		this.messageAggregations.get(groupId).add(message);
 
 		String finish = getProperty(message, "finishReason");
 		if (finish.equalsIgnoreCase("STOP") || message.getMessageType() == MessageType.USER) {
-			this.finalizeMessageGroup(chatId, chunkGroupId);
+			this.finalizeMessageGroup(chatId, groupId);
 		}
 	}
 
+	private String toGroupId(String chatId, Message message) {
+		String messageId = getProperty(message, "id");
+		return chatId + ":" + messageId;
+	}
+
 	private String getProperty(Message message, String key) {
-		 Map<String, Object> properties = message.getProperties();
-		 if (properties != null && properties.containsKey(key)) {
-			 return (String) properties.get(key);
-		 }
-		 return "";
+		Map<String, Object> properties = message.getProperties();
+		if (properties != null && properties.containsKey(key)) {
+			return (String) properties.get(key);
+		}
+		return "";
 	}
 
 	private void finalizeMessageGroup(String chatId, String groupId) {
 		if (this.messageAggregations.containsKey(groupId)) {
+			
 			List<Message> sessionMessages = this.messageAggregations.get(groupId);
 			if (sessionMessages.size() == 1) {
-				this.addToHistory(chatId, sessionMessages.get(0));
+				this.commitToHistoryLog(chatId, sessionMessages.get(0));
 			}
 			else {
 				String aggregatedContent = sessionMessages.stream()
 						.filter(m -> m.getContent() != null)
 						.map(m -> m.getContent()).collect(Collectors.joining());
-				this.addToHistory(chatId, new AssistantMessage(aggregatedContent));
+				this.commitToHistoryLog(chatId, new AssistantMessage(aggregatedContent));
 			}
 			this.messageAggregations.remove(groupId);
 		}
@@ -110,19 +111,24 @@ public class ChatHistory {
 		}
 	}
 
+	private void commitToHistoryLog(String chatId, Message message) {
+		this.chatHistoryLog.putIfAbsent(chatId, new ArrayList<>());
+		this.chatHistoryLog.get(chatId).add(message);
+	}
+
 	public List<Message> getAll(String chatId) {
-		if (!this.history.containsKey(chatId)) {
+		if (!this.chatHistoryLog.containsKey(chatId)) {
 			return List.of();
 		}
-		return this.history.get(chatId);
+		return this.chatHistoryLog.get(chatId);
 	}
 
 	public List<Message> getLastN(String chatId, int lastN) {
-		if (!this.history.containsKey(chatId)) {
+		if (!this.chatHistoryLog.containsKey(chatId)) {
 			return List.of();
 		}
-		List<Message> response = this.history.get(chatId);
-		if (this.history.get(chatId).size() < lastN) {
+		List<Message> response = this.chatHistoryLog.get(chatId);
+		if (this.chatHistoryLog.get(chatId).size() < lastN) {
 			return response;
 		}
 

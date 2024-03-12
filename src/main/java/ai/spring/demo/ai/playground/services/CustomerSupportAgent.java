@@ -67,7 +67,8 @@ public class CustomerSupportAgent {
         // Retrieve related documents to query
         List<Document> similarDocuments = this.vectorStore.similaritySearch(userMessageContent);
 
-        Message systemMessage = getSystemMessage(similarDocuments, this.chatHistory.getLastN(chatId, CHAT_HISTORY_WINDOW_SIZE));
+        Message systemMessage = getSystemMessage(similarDocuments,
+                this.chatHistory.getLastN(chatId, CHAT_HISTORY_WINDOW_SIZE));
 
         logger.info("System Message: {}", systemMessage.getContent());
 
@@ -89,7 +90,7 @@ public class CustomerSupportAgent {
 
             this.chatHistory.addMessage(chatId, assistantMessage);
 
-            return (assistantMessage.getContent() != null)? assistantMessage.getContent() : "";
+            return (assistantMessage.getContent() != null) ? assistantMessage.getContent() : "";
         });
     }
 
@@ -100,7 +101,8 @@ public class CustomerSupportAgent {
 
     private Message getSystemMessage(List<Document> similarDocuments, List<Message> conversationHistory) {
 
-        String history = conversationHistory.stream().map(m -> m.getMessageType() + ": " + m.getContent())
+        String history = conversationHistory.stream()
+                .map(m -> m.getMessageType().name().toLowerCase() + ": " + m.getContent())
                 .collect(Collectors.joining(System.lineSeparator()));
 
         String documents = similarDocuments.stream().map(entry -> entry.getContent())

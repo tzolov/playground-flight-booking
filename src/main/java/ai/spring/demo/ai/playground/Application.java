@@ -42,7 +42,6 @@ public class Application {
 					.accept(new TokenTextSplitter(30, 20, 1, 10000, true)
 							.apply(new TextReader(resource).get()));
 
-			// Thread.sleep(3000);
 			vectorStore.similaritySearch("Cancelling Bookings").forEach(doc -> {
 				logger.info("Similar Document: {}", doc.getContent());
 			});
