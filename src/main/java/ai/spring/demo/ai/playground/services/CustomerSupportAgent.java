@@ -87,9 +87,9 @@ public class CustomerSupportAgent {
 
             AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
 
-            this.chatHistory.addMessageChunk(chatId, assistantMessage);
+            this.chatHistory.addMessage(chatId, assistantMessage);
 
-            return (assistantMessage.getContent() != null) ? assistantMessage.getContent() : "";
+            return (assistantMessage.getContent() != null)? assistantMessage.getContent() : "";
         });
     }
 

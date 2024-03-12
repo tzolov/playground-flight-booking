@@ -1,13 +1,10 @@
 package ai.spring.demo.ai.playground;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingClient;
 import org.springframework.ai.reader.TextReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
@@ -45,7 +42,7 @@ public class Application {
 					.accept(new TokenTextSplitter(30, 20, 1, 10000, true)
 							.apply(new TextReader(resource).get()));
 
-			Thread.sleep(3000);
+			// Thread.sleep(3000);
 			vectorStore.similaritySearch("Cancelling Bookings").forEach(doc -> {
 				logger.info("Similar Document: {}", doc.getContent());
 			});

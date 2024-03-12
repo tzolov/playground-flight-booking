@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.stereotype.Service;
 
 /**
@@ -48,7 +49,7 @@ public class ChatHistory {
 		this.messageAggregations = new ConcurrentHashMap<>();
 	}
 
-	public void addMessage(String chatId, Message message) {
+	private void addToHistory(String chatId, Message message) {
 		this.history.putIfAbsent(chatId, new ArrayList<>());
 		this.history.get(chatId).add(message);
 	}
@@ -63,30 +64,45 @@ public class ChatHistory {
 	 * @param chatId the chat id
 	 * @param message the message chunk
 	 */
-	public void addMessageChunk(String chatId, Message message) {
+	public void addMessage(String chatId, Message message) {
 
-		String id = (message.getProperties() != null) ? (String) message.getProperties().get("id") : "";
-		String chunkGroupId = chunkGroupId(chatId, id);
+		String messageId = getProperty(message, "id");
+		String chunkGroupId = chunkGroupId(chatId, messageId);
 
 		this.messageAggregations.putIfAbsent(chunkGroupId, new ArrayList<>());
+
 		if (this.messageAggregations.keySet().size() > 1) {
 			logger.warn("Multiple active sessions: " + this.messageAggregations.keySet());
 		}
+
 		this.messageAggregations.get(chunkGroupId).add(message);
 
-		String finish = (message.getProperties() != null) ? (String) message.getProperties().get("finishReason") : "";
-		if (finish.equalsIgnoreCase("STOP")) {
+		String finish = getProperty(message, "finishReason");
+		if (finish.equalsIgnoreCase("STOP") || message.getMessageType() == MessageType.USER) {
 			this.finalizeMessageGroup(chatId, chunkGroupId);
 		}
+	}
+
+	private String getProperty(Message message, String key) {
+		 Map<String, Object> properties = message.getProperties();
+		 if (properties != null && properties.containsKey(key)) {
+			 return (String) properties.get(key);
+		 }
+		 return "";
 	}
 
 	private void finalizeMessageGroup(String chatId, String groupId) {
 		if (this.messageAggregations.containsKey(groupId)) {
 			List<Message> sessionMessages = this.messageAggregations.get(groupId);
-			String aggregatedContent = sessionMessages.stream()
-					.filter(m -> m.getContent() != null)
-					.map(m -> m.getContent()).collect(Collectors.joining());
-			this.addMessage(chatId, new AssistantMessage(aggregatedContent));
+			if (sessionMessages.size() == 1) {
+				this.addToHistory(chatId, sessionMessages.get(0));
+			}
+			else {
+				String aggregatedContent = sessionMessages.stream()
+						.filter(m -> m.getContent() != null)
+						.map(m -> m.getContent()).collect(Collectors.joining());
+				this.addToHistory(chatId, new AssistantMessage(aggregatedContent));
+			}
 			this.messageAggregations.remove(groupId);
 		}
 		else {
