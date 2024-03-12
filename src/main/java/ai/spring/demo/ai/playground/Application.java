@@ -2,6 +2,8 @@ package ai.spring.demo.ai.playground;
 
 import java.io.IOException;
 
+import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.theme.Theme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +20,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 @SpringBootApplication
-public class Application {
+@Theme(value = "customer-support-agent")
+public class Application implements AppShellConfigurator {
 
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
 

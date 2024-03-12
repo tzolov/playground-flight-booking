@@ -44,3 +44,5 @@ out/
 storage/
 
 !**/src/test/resources/volumes
+
+src/main/bundles
