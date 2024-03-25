@@ -17,8 +17,9 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<spring-ai.version>0.8.1-SNAPSHOT</spring-ai.version>
-		<hilla.version>2.5.6</hilla.version>
+		<!-- <spring-ai.version>0.8.1</spring-ai.version> -->
+		<spring-ai.version>1.0.0-SNAPSHOT</spring-ai.version>
+		<hilla.version>2.5.7</hilla.version>
 	</properties>
 
 	<dependencies>
@@ -81,11 +82,11 @@
 		</dependency>
 
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
-		</dependency>
+		</dependency> -->
 
 
 		<!-- <dependency>

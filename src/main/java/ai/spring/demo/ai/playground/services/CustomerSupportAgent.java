@@ -112,8 +112,11 @@ public class CustomerSupportAgent {
         Message systemMessage = new SystemPromptTemplate(this.systemPrompt)
                 .createMessage(Map.of(
                         "documents", documents,
+                        // "documents", "",
                         "current_date", java.time.LocalDate.now(),
-                        "history", history));
+                        // "history", ""
+                        "history", history
+                        ));
 
         return systemMessage;
 
