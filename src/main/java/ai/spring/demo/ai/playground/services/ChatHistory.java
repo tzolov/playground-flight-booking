@@ -84,7 +84,7 @@ public class ChatHistory {
 	}
 
 	private String getProperty(Message message, String key) {
-		Map<String, Object> properties = message.getProperties();
+		Map<String, Object> properties = message.getMetadata();
 		if (properties != null && properties.containsKey(key)) {
 			return (String) properties.get(key);
 		}
