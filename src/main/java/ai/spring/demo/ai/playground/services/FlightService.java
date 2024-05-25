@@ -1,6 +1,8 @@
 package ai.spring.demo.ai.playground.services;
 
 import ai.spring.demo.ai.playground.data.*;
+import ai.spring.demo.ai.playground.services.BookingTools.BookingDetails;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

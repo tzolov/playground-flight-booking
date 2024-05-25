@@ -7,7 +7,9 @@ import com.vaadin.flow.theme.Theme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.ai.embedding.EmbeddingClient;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.InMemoryChatMemory;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.reader.TextReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
@@ -16,7 +18,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 @SpringBootApplication
@@ -32,18 +33,15 @@ public class Application implements AppShellConfigurator {
 	// In the real world, ingesting documents would often happen separately, on a CI server or similar
 	@Bean
 	CommandLineRunner docsToEmbeddings(
-			EmbeddingClient embeddingClient,
+			EmbeddingModel embeddingModel,
 			VectorStore vectorStore,
 			ResourceLoader resourceLoader) throws IOException {
 
 		return args -> {
 
-			Resource resource = resourceLoader.getResource("classpath:rag/terms-of-service.txt");
-
 			// Ingest the document into the vector store
-			vectorStore
-					.accept(new TokenTextSplitter(30, 20, 1, 10000, true)
-							.apply(new TextReader(resource).get()));
+			vectorStore.write(new TokenTextSplitter().transform(
+					new TextReader(resourceLoader.getResource("classpath:rag/terms-of-service.txt")).read()));
 
 			vectorStore.similaritySearch("Cancelling Bookings").forEach(doc -> {
 				logger.info("Similar Document: {}", doc.getContent());
@@ -52,7 +50,12 @@ public class Application implements AppShellConfigurator {
 	}
 
 	@Bean
-	public VectorStore vectorStore(EmbeddingClient embeddingClient) {
-		return new SimpleVectorStore(embeddingClient);
+	public VectorStore vectorStore(EmbeddingModel embeddingModel) {
+		return new SimpleVectorStore(embeddingModel);
+	}
+
+	@Bean
+	public ChatMemory chatMemory() {
+		return new InMemoryChatMemory();
 	}
 }

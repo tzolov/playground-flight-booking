@@ -2,7 +2,7 @@ package ai.spring.demo.ai.playground.client;
 
 
 
-import ai.spring.demo.ai.playground.services.CustomerSupportAgent;
+import ai.spring.demo.ai.playground.services.CustomerSupportAssistant;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import reactor.core.publisher.Flux;
@@ -11,10 +11,10 @@ import reactor.core.publisher.Flux;
 @AnonymousAllowed
 public class AssistantService {
 
-    private final CustomerSupportAgent agent;
+    private final CustomerSupportAssistant agent;
 
 
-    public AssistantService(CustomerSupportAgent agent) {
+    public AssistantService(CustomerSupportAssistant agent) {
         this.agent = agent;
     }
 

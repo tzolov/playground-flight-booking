@@ -1,7 +1,11 @@
 package ai.spring.demo.ai.playground.services;
 
+import java.time.LocalDate;
 import java.util.function.Function;
 
+import ai.spring.demo.ai.playground.data.BookingStatus;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +31,17 @@ public class BookingTools {
     }
 
     public record CancelBookingRequest(String bookingNumber, String firstName, String lastName) {
+    }
+
+    @JsonInclude(Include.NON_NULL)
+    public record BookingDetails(String bookingNumber,
+            String firstName,
+            String lastName,
+            LocalDate date,
+            BookingStatus bookingStatus,
+            String from,
+            String to,
+            String bookingClass) {
     }
 
     @Bean
