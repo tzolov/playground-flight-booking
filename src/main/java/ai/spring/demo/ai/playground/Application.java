@@ -32,16 +32,17 @@ public class Application implements AppShellConfigurator {
 
 	// In the real world, ingesting documents would often happen separately, on a CI server or similar
 	@Bean
-	CommandLineRunner docsToEmbeddings(
-			EmbeddingModel embeddingModel,
-			VectorStore vectorStore,
+	CommandLineRunner ingestTermOfServiceToVectorStore(
+			EmbeddingModel embeddingModel, VectorStore vectorStore,
 			ResourceLoader resourceLoader) throws IOException {
 
-		return args -> {
+		var termsOfServiceDocs = resourceLoader.getResource("classpath:rag/terms-of-service.txt");
 
+		return args -> {
 			// Ingest the document into the vector store
-			vectorStore.write(new TokenTextSplitter().transform(
-					new TextReader(resourceLoader.getResource("classpath:rag/terms-of-service.txt")).read()));
+			vectorStore.write(
+				new TokenTextSplitter().transform(
+					new TextReader(termsOfServiceDocs).read()));
 
 			vectorStore.similaritySearch("Cancelling Bookings").forEach(doc -> {
 				logger.info("Similar Document: {}", doc.getContent());

@@ -16,18 +16,18 @@
 
 package ai.spring.demo.ai.playground.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
+
+import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
+import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
 
 /**
  * * @author Christian Tzolov
@@ -35,34 +35,35 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomerSupportAssistant {
 
-	private static final Logger logger = LoggerFactory.getLogger(CustomerSupportAssistant.class);
-
-	private static String CONVERSATION_ID = "default";
-
 	private final ChatClient chatClient;
 
-	public CustomerSupportAssistant(ChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory) {
+	public CustomerSupportAssistant(ChatClient.Builder modelBuilder, VectorStore vectorStore, ChatMemory chatMemory) {
 
 		// @formatter:off
-		this.chatClient = ChatClient.builder(chatModel)
+		this.chatClient = modelBuilder
 				.defaultSystem("""
+						You are a customer chat support agent of an airline named "Funnair".", Respond in a friendly,
+						helpful, and joyful manner.
 
-						You are a customer chat support agent of an airline named "Funnair".",
-						Respond in a friendly, helpful, and joyful manner.
-						Before providing information about a booking or cancelling a booking,
-						you MUST always get the following information from the user:
-						booking number, customer first name and last name.
+						Before providing information about a booking or cancelling a booking, you MUST always
+						get the following information from the user: booking number, customer first name and last name.
+
 						Before changing a booking you MUST ensure it is permitted by the terms.
-						If there is a charge for the change, you MUST ask the user to consent before proceeding.
 
+						If there is a charge for the change, you MUST ask the user to consent before proceeding.
 						""")
 
-				.defaultAdvisor(
-						new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()),
-						new MessageChatMemoryAdvisor(CONVERSATION_ID, chatMemory))
-						// new PromptChatMemoryAdvisor(CONVERSATION_ID, chatMemory))
+				.defaultAdvisors(
+						new MessageChatMemoryAdvisor(chatMemory), // CHAT MEMORY
+						new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults())) // RAG
 
-				.defaultFunctions("getBookingDetails", "changeBooking", "cancelBooking")
+						// new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()
+						// 	.withFilterExpression("'documentType' == 'terms-of-service' && region in ['EU', 'US']")),
+
+						// new VectorStoreChatMemoryAdvisor(vectorStore))
+						// new PromptChatMemoryAdvisor(chatMemory))
+
+				.defaultFunctions("getBookingDetails", "changeBooking", "cancelBooking") // FUNCTION CALLING
 
 				.build();
 		// @formatter:on
@@ -72,6 +73,9 @@ public class CustomerSupportAssistant {
 
 		return this.chatClient.prompt()
 				.user(userMessageContent)
+				.advisor(a -> a
+						.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+						.param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
 				.stream().content();
 	}
 }
