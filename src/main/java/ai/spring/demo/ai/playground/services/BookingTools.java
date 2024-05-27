@@ -21,7 +21,7 @@ public class BookingTools {
     private static final Logger logger = LoggerFactory.getLogger(BookingTools.class);
 
     @Autowired
-    private FlightService carRentalService;
+    private FlightBookingService flightBookingService;
 
     public record BookingDetailsRequest(String bookingNumber, String firstName, String lastName) {
     }
@@ -49,7 +49,7 @@ public class BookingTools {
     public Function<BookingDetailsRequest, BookingDetails> getBookingDetails() {
         return request -> {
             try {
-                return carRentalService.getBookingDetails(request.bookingNumber(), request.firstName(),
+                return flightBookingService.getBookingDetails(request.bookingNumber(), request.firstName(),
                         request.lastName());
             }
             catch (Exception e) {
@@ -64,7 +64,7 @@ public class BookingTools {
     @Description("Change booking dates")
     public Function<ChangeBookingDatesRequest, String> changeBooking() {
         return request -> {
-            carRentalService.changeBooking(request.bookingNumber(), request.firstName(), request.lastName(),
+            flightBookingService.changeBooking(request.bookingNumber(), request.firstName(), request.lastName(),
                     request.date(), request.from(), request.to());
             return "";
         };
@@ -74,7 +74,7 @@ public class BookingTools {
     @Description("Cancel booking")
     public Function<CancelBookingRequest, String> cancelBooking() {
         return request -> {
-            carRentalService.cancelBooking(request.bookingNumber(), request.firstName(), request.lastName());
+            flightBookingService.cancelBooking(request.bookingNumber(), request.firstName(), request.lastName());
             return "";
         };
     }

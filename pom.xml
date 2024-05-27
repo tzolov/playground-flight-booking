@@ -23,6 +23,7 @@
 	</properties>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-openai-spring-boot-starter</artifactId>
@@ -30,13 +31,23 @@
 
 		<!-- <dependency>
 			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-azure-openai-spring-boot-starter</artifactId>
+		</dependency> -->
+
+		<!-- <dependency>
+			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-mistral-ai-spring-boot-starter</artifactId>
 		</dependency> -->
+
+
 		<!-- <dependency>
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-vertex-ai-gemini-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-transformers-spring-boot-starter</artifactId>
 		</dependency> -->
-
 
 		<!-- Local HuggingFace Transfomers Embedding Client (using ONNX)
 		When enabled make sure to set:
@@ -86,19 +97,6 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
-
-		<!-- <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<optional>true</optional>
-		</dependency> -->
-
-
-		<!-- <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency> -->
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

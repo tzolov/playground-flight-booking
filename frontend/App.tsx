@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import BookingDetails from "Frontend/generated/ai/spring/demo/ai/playground/services/BookingDetails";
+import BookingDetails from "Frontend/generated/ai/spring/demo/ai/playground/services/BookingTools/BookingDetails";
 import {AssistantService, BookingService} from "Frontend/generated/endpoints";
 import {GridColumn} from "@hilla/react-components/GridColumn";
 import {Grid} from "@hilla/react-components/Grid";

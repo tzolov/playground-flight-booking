@@ -20,6 +20,7 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.vectorstore.SearchRequest;
@@ -52,16 +53,16 @@ public class CustomerSupportAssistant {
 
 						If there is a charge for the change, you MUST ask the user to consent before proceeding.
 						""")
-
 				.defaultAdvisors(
-						new MessageChatMemoryAdvisor(chatMemory), // CHAT MEMORY
+						new PromptChatMemoryAdvisor(chatMemory),
+						// new MessageChatMemoryAdvisor(chatMemory), // CHAT MEMORY
 						new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults())) // RAG
 
 						// new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()
 						// 	.withFilterExpression("'documentType' == 'terms-of-service' && region in ['EU', 'US']")),
 
 						// new VectorStoreChatMemoryAdvisor(vectorStore))
-						// new PromptChatMemoryAdvisor(chatMemory))
+
 
 				.defaultFunctions("getBookingDetails", "changeBooking", "cancelBooking") // FUNCTION CALLING
 
@@ -73,7 +74,7 @@ public class CustomerSupportAssistant {
 
 		return this.chatClient.prompt()
 				.user(userMessageContent)
-				.advisor(a -> a
+				.advisors(a -> a
 						.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
 						.param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
 				.stream().content();

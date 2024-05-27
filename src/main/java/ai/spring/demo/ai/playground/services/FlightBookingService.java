@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Random;
 
 @Service
-public class FlightService {
+public class FlightBookingService {
 
     private final BookingData db;
 
-    public FlightService() {
+    public FlightBookingService() {
         db = new BookingData();
 
         initDemoData();

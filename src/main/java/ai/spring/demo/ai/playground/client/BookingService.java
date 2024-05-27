@@ -6,18 +6,18 @@ import dev.hilla.BrowserCallable;
 import java.util.List;
 
 import ai.spring.demo.ai.playground.services.BookingTools.BookingDetails;
-import ai.spring.demo.ai.playground.services.FlightService;
+import ai.spring.demo.ai.playground.services.FlightBookingService;
 
 @BrowserCallable
 @AnonymousAllowed
 public class BookingService {
-    private final FlightService carRentalService;
+    private final FlightBookingService flightBookingService;
 
-    public BookingService(FlightService carRentalService) {
-        this.carRentalService = carRentalService;
+    public BookingService(FlightBookingService flightBookingService) {
+        this.flightBookingService = flightBookingService;
     }
 
     public List<BookingDetails> getBookings() {
-        return carRentalService.getBookings();
+        return flightBookingService.getBookings();
     }
 }
