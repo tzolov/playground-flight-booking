@@ -57,9 +57,9 @@ public class CustomerSupportAssistant {
 					Today is {current_date}.
 					""")
 				.defaultAdvisors(
-						new PromptChatMemoryAdvisor(chatMemory),
-						// new MessageChatMemoryAdvisor(chatMemory), // CHAT MEMORY
-						new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()), // RAG
+						// new PromptChatMemoryAdvisor(chatMemory),
+					
+						// new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()), // RAG
 						new LoggingAdvisor())
 
 						// new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()
@@ -68,7 +68,7 @@ public class CustomerSupportAssistant {
 						// new VectorStoreChatMemoryAdvisor(vectorStore))
 
 
-				.defaultFunctions("getBookingDetails", "changeBooking", "cancelBooking") // FUNCTION CALLING
+				// .defaultFunctions("getBookingDetails", "changeBooking", "cancelBooking") // FUNCTION CALLING
 
 				.build();
 		// @formatter:on
