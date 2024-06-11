@@ -81,6 +81,12 @@
 			<artifactId>spring-ai-mistral-ai-spring-boot-starter</artifactId>
 		</dependency> -->
 
+		<!-- Vector Databases-->
+		<!-- <dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-pgvector-store-spring-boot-starter</artifactId>
+		</dependency> -->
+		
 		<!-- Other spring dependecies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
