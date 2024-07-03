@@ -43,11 +43,23 @@
 
 	<dependencies>
 
-		<!-- OpenAI -->
+		<!-- OpenAI (Used also for Groq access) -->
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-openai-spring-boot-starter</artifactId>
 		</dependency>
+
+		<!-- Standalone Embedding Model. To be used in combination with the Athropic, Groq, Vertex Geminie chat models -->
+		<!-- <dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-transformers-spring-boot-starter</artifactId>
+		</dependency> -->
+
+		<!-- Anthropic (requires the transformers embedding model) -->
+		<!-- <dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-anthropic-spring-boot-starter</artifactId>
+		</dependency> -->
 
 		<!-- Azure OpenAI -->
 		<!-- <dependency>
@@ -55,14 +67,10 @@
             <artifactId>spring-ai-azure-openai-spring-boot-starter</artifactId>
         </dependency> -->
 
-		<!-- VertexAI Gemini -->
+		<!-- VertexAI Gemini (requires the transformers embedding model) -->
 		<!-- <dependency>
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-vertex-ai-gemini-spring-boot-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-transformers-spring-boot-starter</artifactId>
 		</dependency> -->
 
 		<!-- Mistral AI -->
