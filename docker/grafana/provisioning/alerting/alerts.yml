@@ -1,0 +1,211 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: 10s
+      folder: Teahouse
+      interval: 10s
+      rules:
+        - uid: dce655bc-f9d5-41fa-bec3-53ce55a1e049
+          title: High Error Rate
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 60
+                to: 0
+              datasourceUid: prometheus
+              model:
+                datasource:
+                    type: prometheus
+                    uid: prometheus
+                editorMode: code
+                exemplar: false
+                expr: rate(http_server_requests_seconds_count{outcome!="SUCCESS", application="tea-service"}[$__rate_interval])
+                hide: false
+                instant: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: true
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 60
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                settings:
+                    mode: dropNN
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 60
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.1
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: 280lKAr7k
+          panelId: 8
+          noDataState: OK
+          execErrState: Error
+          for: 10s
+          annotations:
+            __dashboardUid__: 280lKAr7k
+            __panelId__: "8"
+            summary: Error rate is high
+          isPaused: false
+        - uid: d4ac5559-95ec-4295-819f-a9777ae51518
+          title: High Latency
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 60
+                to: 0
+              datasourceUid: prometheus
+              model:
+                datasource:
+                    type: prometheus
+                    uid: prometheus
+                editorMode: code
+                expr: histogram_quantile(1.00, sum(rate(http_server_requests_seconds_bucket{application=~"tea-service"}[$__rate_interval])) by (le))
+                hide: false
+                instant: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: true
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 60
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                settings:
+                    mode: dropNN
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 60
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.1
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: 280lKAr7k
+          panelId: 6
+          noDataState: OK
+          execErrState: Error
+          for: 10s
+          annotations:
+            __dashboardUid__: 280lKAr7k
+            __panelId__: "6"
+            summary: Latency is high
+          isPaused: false
+contactPoints:
+  - orgId: 1
+    name: alerts-email-and-local-webhook
+    receivers:
+      - uid: 4e3bfe25-00cf-4173-b02b-16f077e539da
+        type: email
+        disableResolveMessage: false
+        settings:
+            addresses: alerts@example.org
+            singleEmail: false
+      - uid: ffc01bb5-d147-4890-a406-b2598f3cd0cc
+        type: webhook
+        disableResolveMessage: false
+        settings:
+            url: 'http://host.docker.internal:3333'
+policies:
+  - orgId: 1
+    receiver: alerts-email-and-local-webhook
+    group_by: ['grafana_folder', 'alertname']
+    group_wait: 0s
+    group_interval: 1s
