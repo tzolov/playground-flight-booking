@@ -13,6 +13,9 @@ import java.util.Random;
 @Service
 public class FlightBookingService {
 
+    // -----------------------------
+    //      Booking Database
+    // -----------------------------
     private final BookingData db;
 
     public FlightBookingService() {
@@ -54,6 +57,9 @@ public class FlightBookingService {
         db.setBookings(bookings);
     }
 
+    // -----------------------------
+    //        Booking Service
+    // -----------------------------
     public List<BookingDetails> getBookings() {
         return db.getBookings().stream().map(this::toBookingDetails).toList();
     }

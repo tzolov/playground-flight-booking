@@ -16,9 +16,10 @@
 
 package ai.spring.demo.ai.playground.services;
 
-import java.time.LocalDate;
+import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
+import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
 
-import reactor.core.publisher.Flux;
+import java.time.LocalDate;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
@@ -28,8 +29,7 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
+import reactor.core.publisher.Flux;
 
 /**
  * * @author Christian Tzolov
@@ -55,31 +55,27 @@ public class CustomerSupportAssistant {
 						Use the provided functions to fetch booking details, change bookings, and cancel bookings.
 						Use parallel function calling if required.
 						Today is {current_date}.
-					""")
+					""")	
 				.defaultAdvisors(
-						new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
-						// new VectorStoreChatMemoryAdvisor(vectorStore)),
-					
-						new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()), // RAG
-						// new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()
-						// 	.withFilterExpression("'documentType' == 'terms-of-service' && region in ['EU', 'US']")),
-						
-						new LoggingAdvisor())
-						
+						new PromptChatMemoryAdvisor(chatMemory), // Conversation Memory
+						new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()) // RAG
+				)						
 				.defaultFunctions("getBookingDetails", "changeBooking", "cancelBooking") // FUNCTION CALLING
-
 				.build();
 		// @formatter:on
 	}
 
 	public Flux<String> chat(String chatId, String userMessageContent) {
 
+		// @formatter:off
 		return this.chatClient.prompt()
-				.system(s -> s.param("current_date", LocalDate.now().toString()))
-				.user(userMessageContent)
-				.advisors(a -> a
-						.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-						.param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
-				.stream().content();
+			.system(s -> s.param("current_date", LocalDate.now().toString()))
+			.advisors(advisor -> advisor.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+										.param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
+			.user(userMessageContent)
+			.stream()
+			.content();
+		// @formatter:on
 	}
+
 }

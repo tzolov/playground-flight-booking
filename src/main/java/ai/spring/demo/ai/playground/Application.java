@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
-import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.reader.TextReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -27,36 +26,61 @@ public class Application implements AppShellConfigurator {
 
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {			
 		new SpringApplicationBuilder(Application.class).run(args);
 	}
 
+	// Ingest the document into the vector store
 	// In the real world, ingesting documents would often happen separately, on a CI
 	// server or similar.
 	@Bean
-	CommandLineRunner ingestTermOfServiceToVectorStore(EmbeddingModel embeddingModel, VectorStore vectorStore,
+	CommandLineRunner ingestTermOfServiceToVectorStore(VectorStore vectorStore,
 			@Value("classpath:rag/terms-of-service.txt") Resource termsOfServiceDocs) {
 
-		return args -> {
-			// Ingest the document into the vector store
-			vectorStore.write(new TokenTextSplitter().transform(new TextReader(termsOfServiceDocs).read()));
-
-			vectorStore.similaritySearch("Cancelling Bookings").forEach(doc -> {
-				logger.info("Similar Document: {}", doc.getContent());
-			});
-		};
+		// @formatter:off
+		return args -> vectorStore.write(
+						new TokenTextSplitter().transform(
+								new TextReader(termsOfServiceDocs).read()));
+		// @formatter:on
 	}
-
-	// @Bean
-	// @ConditionalOnMissingBean
-	// public VectorStore vectorStore(EmbeddingModel embeddingModel) {
-	// return new SimpleVectorStore(embeddingModel);
-	// }
 
 	@Bean
 	public ChatMemory chatMemory() {
 		return new InMemoryChatMemory();
 	}
+
+	// @Bean	
+	// public ObservationHandler<ChatClientObservationContext> observationHandler(Tracer tracer) {
+	// 	return new ObservationHandler<ChatClientObservationContext>() {
+
+	// 		@Override
+	// 		public boolean supportsContext(Context context) {
+	// 			return context instanceof ChatClientObservationContext;
+	// 		}
+
+	// 		@Override
+	// 		public void onStart(ChatClientObservationContext context) {
+	// 			TracingContext tracingContext = context.get(TracingContext.class);
+	// 			if (tracingContext != null) {
+	// 				try (var val = tracer.withSpan(tracingContext.getSpan())) {
+	// 					logger.info("Context Name: " + context.getContextualName());
+	// 				}					
+	// 			}
+	// 		}
+
+	// 		@Override
+	// 		public void onError(ChatClientObservationContext context) {
+	// 			TracingContext tracingContext = context.get(TracingContext.class);
+	// 			if (tracingContext != null) {
+	// 				try (var val = tracer.withSpan(tracingContext.getSpan())) {
+	// 					logger.error("Error in chat client", context.getError());
+	// 				}					
+	// 			}
+	// 		}
+
+	// 	};
+
+	// }
 
 	// Optional suppress the actuator server observations. This hides the actuator
 	// prometheus traces.
@@ -74,5 +98,11 @@ public class Application implements AppShellConfigurator {
 			}
 		};
 	}
+
+	// @Bean
+	// @ConditionalOnMissingBean
+	// public VectorStore vectorStore(EmbeddingModel embeddingModel) {
+	// return new SimpleVectorStore(embeddingModel);
+	// }
 
 }
