@@ -24,7 +24,7 @@ import io.micrometer.observation.ObservationPredicate;
 @Theme(value = "customer-support-agent")
 public class Application implements AppShellConfigurator {
 
-	private static final Logger logger = LoggerFactory.getLogger(Application.class);
+	// private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
 	public static void main(String[] args) {			
 		new SpringApplicationBuilder(Application.class).run(args);

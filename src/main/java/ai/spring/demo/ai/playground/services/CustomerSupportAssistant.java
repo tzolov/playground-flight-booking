@@ -53,7 +53,6 @@ public class CustomerSupportAssistant {
 						Before changing a booking you MUST ensure it is permitted by the terms.
 						If there is a charge for the change, you MUST ask the user to consent before proceeding.
 						Use the provided functions to fetch booking details, change bookings, and cancel bookings.
-						Use parallel function calling if required.
 						Today is {current_date}.
 					""")	
 				.defaultAdvisors(

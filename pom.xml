@@ -56,6 +56,8 @@
 			<artifactId>spring-ai-transformers-spring-boot-starter</artifactId>
 		</dependency> -->
 
+
+
 		<!-- Anthropic (requires the transformers embedding model) -->
 		<!-- <dependency>
 			<groupId>org.springframework.ai</groupId>
