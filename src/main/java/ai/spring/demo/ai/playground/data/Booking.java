@@ -4,87 +4,106 @@ import java.time.LocalDate;
 
 public class Booking {
 
-    private String bookingNumber;
-    private LocalDate date;
-    private LocalDate bookingTo;
-    private Customer customer;
-    private String from;
-    private String to;
-    private BookingStatus bookingStatus;
-    private BookingClass bookingClass;
+	private String bookingNumber;
 
-    public Booking(String bookingNumber, LocalDate date, Customer customer, BookingStatus bookingStatus, String from, String to, BookingClass bookingClass) {
-        this.bookingNumber = bookingNumber;
-        this.date = date;
-        this.customer = customer;
-        this.bookingStatus = bookingStatus;
-        this.from = from;
-        this.to = to;
-        this.bookingClass = bookingClass;
-    }
+	private LocalDate date;
 
+	private LocalDate bookingTo;
 
-    public String getBookingNumber() {
-        return bookingNumber;
-    }
+	private Customer customer;
 
-    public void setBookingNumber(String bookingNumber) {
-        this.bookingNumber = bookingNumber;
-    }
+	private String from;
 
-    public LocalDate getDate() {
-        return date;
-    }
+	private String to;
 
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
+	private BookingStatus bookingStatus;
 
-    public LocalDate getBookingTo() {
-        return bookingTo;
-    }
+	private String seatNumber;
 
-    public void setBookingTo(LocalDate bookingTo) {
-        this.bookingTo = bookingTo;
-    }
+	private BookingClass bookingClass;
 
-    public Customer getCustomer() {
-        return customer;
-    }
+	public Booking(String bookingNumber, LocalDate date, Customer customer, BookingStatus bookingStatus, String from,
+			String to, String seatNumber, BookingClass bookingClass) {
+		this.bookingNumber = bookingNumber;
+		this.date = date;
+		this.customer = customer;
+		this.bookingStatus = bookingStatus;
+		this.from = from;
+		this.to = to;
+        this.seatNumber = seatNumber;
+		this.bookingClass = bookingClass;
+	}
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
+	public String getBookingNumber() {
+		return bookingNumber;
+	}
 
-    public BookingStatus getBookingStatus() {
-        return bookingStatus;
-    }
+	public void setBookingNumber(String bookingNumber) {
+		this.bookingNumber = bookingNumber;
+	}
 
-    public void setBookingStatus(BookingStatus bookingStatus) {
-        this.bookingStatus = bookingStatus;
-    }
+	public LocalDate getDate() {
+		return date;
+	}
 
-    public String getFrom() {
-        return from;
-    }
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
 
-    public void setFrom(String from) {
-        this.from = from;
-    }
+	public LocalDate getBookingTo() {
+		return bookingTo;
+	}
 
-    public String getTo() {
-        return to;
-    }
+	public void setBookingTo(LocalDate bookingTo) {
+		this.bookingTo = bookingTo;
+	}
 
-    public void setTo(String to) {
-        this.to = to;
-    }
+	public Customer getCustomer() {
+		return customer;
+	}
 
-    public BookingClass getBookingClass() {
-        return bookingClass;
-    }
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
 
-    public void setBookingClass(BookingClass bookingClass) {
-        this.bookingClass = bookingClass;
-    }
+	public BookingStatus getBookingStatus() {
+		return bookingStatus;
+	}
+
+	public void setBookingStatus(BookingStatus bookingStatus) {
+		this.bookingStatus = bookingStatus;
+	}
+
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public String getTo() {
+		return to;
+	}
+
+	public void setTo(String to) {
+		this.to = to;
+	}
+
+	public BookingClass getBookingClass() {
+		return bookingClass;
+	}
+
+	public void setBookingClass(BookingClass bookingClass) {
+		this.bookingClass = bookingClass;
+	}
+
+	public String getSeatNumber() {
+		return seatNumber;
+	}
+
+	public void setSeatNumber(String seatNumber) {
+		this.seatNumber = seatNumber;
+	}
+
 }
