@@ -1,27 +1,24 @@
 package ai.spring.demo.ai.playground.services;
 
 import java.time.LocalDate;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 import java.util.function.Function;
-
-import ai.spring.demo.ai.playground.data.BookingStatus;
-import groovyjarjarpicocli.CommandLine.ExecutionException;
-import reactor.core.publisher.Sinks;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.springframework.core.NestedExceptionUtils;
 
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import ai.spring.demo.ai.playground.data.BookingStatus;
+import ai.spring.demo.ai.playground.services.SeatChangeQueue.SeatChangeRequest;
 
 @Configuration
 public class BookingTools {
@@ -30,6 +27,9 @@ public class BookingTools {
 
 	@Autowired
 	private FlightBookingService flightBookingService;
+
+	@Autowired
+	private SeatChangeQueue shared;
 
 	public record BookingDetailsRequest(String bookingNumber, String firstName, String lastName) {
 	}
@@ -83,42 +83,29 @@ public class BookingTools {
 		};
 	}
 
-	public record SeatChangeRequest(String requestId) {
-	}
-
 	public record LLMSeatChangeRequest(String bookingNumber, String firstName, String lastName) {
 	}
 
-	private final ConcurrentHashMap<String, CompletableFuture<String>> pendingRequests = new ConcurrentHashMap<>();
-
-	private final ConcurrentHashMap<String, Sinks.Many<SeatChangeRequest>> seatChangeRequests = new ConcurrentHashMap<>();
-
 	@Bean
 	@Description("Change seat")
-	public Function<LLMSeatChangeRequest, String> changeSeat() {
-		return request -> {
+	public BiFunction<LLMSeatChangeRequest, Map<String, Object>, String> changeSeat() {
+		return (request, context) -> {
 			System.out.println("Changing seat for " + request.bookingNumber() + " to a better one");
 
-			var id = UUID.randomUUID().toString();
-			CompletableFuture<String> future = new CompletableFuture<>();
-			pendingRequests.put(id, future);
+			var chatId = context.get("chat_id").toString();
 
-			// FIXME: Only send the request to the correct chatId
-			// This function is called from the LLM, that does not know the internal
-			// chatId, how do we get it?
-			// Advisor context maybe?
-			seatChangeRequests.values().forEach(sink -> sink.tryEmitNext(new SeatChangeRequest(id)));
+			CompletableFuture<String> future = new CompletableFuture<>();
+			shared.getPendingRequests().put(chatId, future);
+
+			shared.getSeatChangeRequests().values().forEach(sink -> sink.tryEmitNext(new SeatChangeRequest(chatId)));
 
 			// Wait for the seat selection to complete
 			String seat;
 			try {
-				seat = future.get(); // This will block until completeSeatChangeRequest is
-										// called
+				// This will block until completeSeatChangeRequest is called
+				seat = future.get();
 			}
-			catch (InterruptedException | ExecutionException e) {
-				throw new RuntimeException("Seat selection interrupted", e);
-			}
-			catch (java.util.concurrent.ExecutionException e) {
+			catch (Exception e) {
 				throw new RuntimeException("Seat selection interrupted", e);
 			}
 

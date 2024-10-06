@@ -20,11 +20,13 @@ import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvis
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.model.function.FunctionCallingOptionsBuilder.PortableFunctionCallingOptions;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
@@ -59,7 +61,7 @@ public class CustomerSupportAssistant {
 						new PromptChatMemoryAdvisor(chatMemory), // Conversation Memory
 						new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()) // RAG
 				)						
-				.defaultFunctions("getBookingDetails", "changeBooking", "cancelBooking") // FUNCTION CALLING
+				.defaultFunctions("getBookingDetails", "changeBooking", "cancelBooking", "changeSeat") // FUNCTION CALLING
 				.build();
 		// @formatter:on
 	}
@@ -69,6 +71,7 @@ public class CustomerSupportAssistant {
 		// @formatter:off
 		return this.chatClient.prompt()
 			.system(s -> s.param("current_date", LocalDate.now().toString()))
+			.options(PortableFunctionCallingOptions.builder().withToolContext(Map.of("chat_id", chatId)).build())
 			.advisors(advisor -> advisor.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
 										.param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
 			.user(userMessageContent)
