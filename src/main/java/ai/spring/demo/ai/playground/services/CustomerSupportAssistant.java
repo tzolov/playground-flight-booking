@@ -26,7 +26,6 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.model.function.FunctionCallingOptionsBuilder.PortableFunctionCallingOptions;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
@@ -56,6 +55,7 @@ public class CustomerSupportAssistant {
 						If there is a charge for the change, you MUST ask the user to consent before proceeding.
 						Use the provided functions to fetch booking details, change bookings, and cancel bookings.
 						Today is {current_date}.
+						When asked for users' flight details, do not rely on pervious conversation memory (history) but always call the function.
 					""")	
 				.defaultAdvisors(
 						new PromptChatMemoryAdvisor(chatMemory), // Conversation Memory
@@ -70,11 +70,11 @@ public class CustomerSupportAssistant {
 
 		// @formatter:off
 		return this.chatClient.prompt()
-			.system(s -> s.param("current_date", LocalDate.now().toString()))
-			.options(PortableFunctionCallingOptions.builder().withToolContext(Map.of("chat_id", chatId)).build())
-			.advisors(advisor -> advisor.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-										.param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
 			.user(userMessageContent)
+			.system(s -> s.param("current_date", LocalDate.now().toString()))
+			.toolContext(Map.of("chat_id", chatId))
+			.advisors(a -> a.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+				.param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
 			.stream()
 			.content();
 		// @formatter:on

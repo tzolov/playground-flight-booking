@@ -1,13 +1,13 @@
 package ai.spring.demo.ai.playground.services;
 
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -88,11 +88,11 @@ public class BookingTools {
 
 	@Bean
 	@Description("Change seat")
-	public BiFunction<LLMSeatChangeRequest, Map<String, Object>, String> changeSeat() {
-		return (request, context) -> {
+	public BiFunction<LLMSeatChangeRequest, ToolContext, String> changeSeat() {
+		return (request, toolContext) -> {
 			System.out.println("Changing seat for " + request.bookingNumber() + " to a better one");
 
-			var chatId = context.get("chat_id").toString();
+			var chatId = toolContext.getContext().get("chat_id").toString();
 
 			CompletableFuture<String> future = new CompletableFuture<>();
 			shared.getPendingRequests().put(chatId, future);

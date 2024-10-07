@@ -22,7 +22,7 @@ import io.micrometer.observation.ObservationPredicate;
 @Theme(value = "customer-support-agent")
 public class Application implements AppShellConfigurator {
 
-	public static void main(String[] args) {			
+	public static void main(String[] args) {
 		new SpringApplicationBuilder(Application.class).run(args);
 	}
 
@@ -52,7 +52,8 @@ public class Application implements AppShellConfigurator {
 					&& context instanceof ServerRequestObservationContext serverContext) {
 				String requestUri = serverContext.getCarrier().getRequestURI();
 				return !requestUri.startsWith("/actuator") && !requestUri.startsWith("/VAADIN")
-						&& !requestUri.startsWith("/HILLA") && !requestUri.startsWith("/connect");
+						&& !requestUri.startsWith("/HILLA") && !requestUri.startsWith("/connect")
+						&& !requestUri.startsWith("/**") && !requestUri.equalsIgnoreCase("/");
 			}
 			else {
 				return true;
