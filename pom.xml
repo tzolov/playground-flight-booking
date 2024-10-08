@@ -49,14 +49,18 @@
 			<artifactId>spring-ai-openai-spring-boot-starter</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-chroma-store-spring-boot-starter</artifactId>
+		</dependency>
+
+
 		<!-- Standalone Embedding Model. To be used in combination with the Athropic, Groq, Vertex
 		Geminie chat models -->
 		<!-- <dependency>
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-transformers-spring-boot-starter</artifactId>
 		</dependency> -->
-
-
 
 		<!-- Anthropic (requires the transformers embedding model) -->
 		<!-- <dependency>
@@ -93,11 +97,6 @@
 			<artifactId>spring-ai-qdrant-store-spring-boot-starter</artifactId>
 		</dependency> -->
 
-		<dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-chroma-store-spring-boot-starter</artifactId>
-		</dependency>
-
 		<!-- Vaadin -->
 		<dependency>
 			<groupId>com.vaadin</groupId>
@@ -128,6 +127,7 @@
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-tracing-bridge-brave</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>io.zipkin.reporter2</groupId>
 			<artifactId>zipkin-reporter-brave</artifactId>
