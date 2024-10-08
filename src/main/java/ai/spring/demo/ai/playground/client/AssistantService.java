@@ -14,17 +14,17 @@ import reactor.core.publisher.Sinks;
 @AnonymousAllowed
 public class AssistantService {
 
-	private final CustomerSupportAssistant agent;
+	private final CustomerSupportAssistant assistant;
 
 	private SeatChangeQueue seatChangeQueue;
 
-	public AssistantService(CustomerSupportAssistant agent, SeatChangeQueue shared) {
-		this.agent = agent;
+	public AssistantService(CustomerSupportAssistant assistant, SeatChangeQueue shared) {
+		this.assistant = assistant;
 		this.seatChangeQueue = shared;
 	}
 
 	public Flux<String> chat(String chatId, String userMessage) {
-		return this.agent.chat(chatId, userMessage);
+		return this.assistant.chat(chatId, userMessage);
 	}
 
 	public Flux<SeatChangeRequest> seatChangeRequests(String chatId) {
