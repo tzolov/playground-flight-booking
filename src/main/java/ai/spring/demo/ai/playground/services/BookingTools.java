@@ -87,7 +87,7 @@ public class BookingTools {
 	}
 
 	@Bean
-	@Description("Change seat")
+	@Description("Change flight booking seat")
 	public BiFunction<LLMSeatChangeRequest, ToolContext, String> changeSeat() {
 		return (request, toolContext) -> {
 			System.out.println("Changing seat for " + request.bookingNumber() + " to a better one");

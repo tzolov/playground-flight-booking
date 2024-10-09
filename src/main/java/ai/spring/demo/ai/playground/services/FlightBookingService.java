@@ -3,6 +3,8 @@ package ai.spring.demo.ai.playground.services;
 import ai.spring.demo.ai.playground.data.*;
 import ai.spring.demo.ai.playground.services.BookingTools.BookingDetails;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -12,6 +14,8 @@ import java.util.Random;
 
 @Service
 public class FlightBookingService {
+
+	private static final Logger logger = LoggerFactory.getLogger(FlightBookingService.class);
 
 	// -----------------------------
 	// Booking Database
@@ -78,12 +82,17 @@ public class FlightBookingService {
 	}
 
 	public BookingDetails getBookingDetails(String bookingNumber, String firstName, String lastName) {
+		logger.info("Calling the getBookingDetails service method");
+		
 		var booking = findBooking(bookingNumber, firstName, lastName);
 		return toBookingDetails(booking);
 	}
 
 	public void changeBooking(String bookingNumber, String firstName, String lastName, String newDate, String from,
 			String to) {
+
+		logger.info("Calling the changeBooking service method");
+
 		var booking = findBooking(bookingNumber, firstName, lastName);
 		if (booking.getDate().isBefore(LocalDate.now().plusDays(1))) {
 			throw new IllegalArgumentException("Booking cannot be changed within 24 hours of the start date.");
@@ -94,6 +103,8 @@ public class FlightBookingService {
 	}
 
 	public void cancelBooking(String bookingNumber, String firstName, String lastName) {
+		logger.info("Calling the cancelBooking service method");
+
 		var booking = findBooking(bookingNumber, firstName, lastName);
 		if (booking.getDate().isBefore(LocalDate.now().plusDays(2))) {
 			throw new IllegalArgumentException("Booking cannot be cancelled within 48 hours of the start date.");
@@ -108,6 +119,8 @@ public class FlightBookingService {
 	}
 
 	public void changeSeat(String bookingNumber, String firstName, String lastName, String seatNumber) {
+		logger.info("Calling the changeSeat service method");
+
 		var booking = findBooking(bookingNumber, firstName, lastName);
 		booking.setSeatNumber(seatNumber);
 	}
