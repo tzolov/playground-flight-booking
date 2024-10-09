@@ -16,14 +16,12 @@
 
 package ai.spring.demo.ai.playground.services;
 
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
-
 import java.util.Map;
 
+import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
+import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -38,11 +36,11 @@ import reactor.core.publisher.Flux;
 public class CustomerSupportAssistant {
 
 	private final ChatClient chatClient;
-	
+
 	// @formatter:off
-	public CustomerSupportAssistant(ChatClient.Builder chatClientBuilder, 
+	public CustomerSupportAssistant(ChatClient.Builder chatClientBuilder,
 		VectorStore vectorStore, ChatMemory chatMemory) {
-		
+			
 		this.chatClient = chatClientBuilder
 				.defaultSystem("""
 						You are a customer chat support agent of an airline named "Funnair"."
@@ -51,9 +49,9 @@ public class CustomerSupportAssistant {
 					
 						Before answering a question about a booking or cancelling a booking, you MUST always
 						get the following information from the user: booking number, customer first name and last name.
-                
+				
 						If you can not retrieve the status of my flight, please just say "I am sorry, I can not find the booking details".
-                
+				
 						Check the message history for booking details before asking the user.
 						Before changing a booking you MUST ensure it is permitted by the terms.
 						If there is a charge for the change, you MUST ask the user to consent before proceeding.
@@ -62,7 +60,6 @@ public class CustomerSupportAssistant {
 						When asked for users' flight details, do not rely on pervious conversation memory (history) but always call the function.
 					""")	
 				.defaultAdvisors(
-						// new PromptChatMemoryAdvisor(chatMemory) // Conversation Memory
 						new MessageChatMemoryAdvisor(chatMemory) // Conversation Memory
 						,
 						new QuestionAnswerAdvisor(vectorStore) // RAG
@@ -73,14 +70,15 @@ public class CustomerSupportAssistant {
 
 	public Flux<String> chat(String chatId, String userMessage) {
 
-		return this.chatClient.prompt()
+		return Flux.just(this.chatClient.prompt()
 			.user(userMessage)
 			.toolContext(Map.of("chat_id", chatId))
 			.advisors(a -> a.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
 				.param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
-			.stream()
-			.content();	
+			.call()
+			.content());	
 	}
-	// @formatter:on
+// @formatter:on
+
 
 }
