@@ -30,16 +30,16 @@ Add to the POM the Spring AI Open AI boot starter:
 </dependency>
 ```
 
-Add the OpenAI configuraiton to the `applicaiton.properties`:
+Add the OpenAI configuration to the `application.properties`:
 
 ```
 spring.ai.openai.api-key=${OPENAI_API_KEY}
 spring.ai.openai.chat.options.model=gpt-4o
 ```
 
-### WIth VertexAI Geminie Chat
+### WIth VertexAI Gemini Chat
 
-Add to the POM the Spring AI VertexAI Gemeni and Onnx Transfomer Embedding boot starters:
+Add to the POM the Spring AI VertexAI Gemini and Onnx Transformer Embedding boot starters:
 
 ```xml
 <dependency>
@@ -53,7 +53,7 @@ Add to the POM the Spring AI VertexAI Gemeni and Onnx Transfomer Embedding boot 
 </dependency>
 ```
 
-Add the VertexAI Gemini configuraiton to the `applicaiton.properties`:
+Add the VertexAI Gemini configuration to the `application.properties`:
 
 ```
 spring.ai.vertex.ai.gemini.project-id=${VERTEX_AI_GEMINI_PROJECT_ID}
@@ -73,7 +73,7 @@ Add to the POM the Spring AI Azure OpenAI boot starter:
 </dependency>
 ```
 
-Add the Azure OpenAI configuraiton to the `applicaiton.properties`:
+Add the Azure OpenAI configuration to the `application.properties`:
 
 ```
 spring.ai.azure.openai.api-key=${AZURE_OPENAI_API_KEY}
@@ -83,7 +83,7 @@ spring.ai.azure.openai.chat.options.deployment-name=gpt-4o
 
 ### With Groq Chat
 
-It reuses the OpenAI Chat client but ponted to the Groq endpont
+It reuses the OpenAI Chat client but pointed to the Groq endpoint
 
 Add to the POM the Spring AI Open AI boot starter:
 
@@ -98,7 +98,7 @@ Add to the POM the Spring AI Open AI boot starter:
 </dependency>
 ```
 
-Add the Groq configuraiton to the `applicaiton.properties`:
+Add the Groq configuration to the `application.properties`:
 
 ```
 spring.ai.openai.api-key=${GROQ_API_KEY}
@@ -108,7 +108,7 @@ spring.ai.openai.chat.options.model=llama3-70b-8192
 
 ### With Anthropic Claude 3 Chat
 
-Add to the POM the Spring AI Anthropic Claude and Onnx Transfomer Embedding boot starters:
+Add to the POM the Spring AI Anthropic Claude and Onnx Transformer Embedding boot starters:
 
 ```xml
 <dependency>
@@ -122,7 +122,7 @@ Add to the POM the Spring AI Anthropic Claude and Onnx Transfomer Embedding boot
 </dependency>
 ```
 
-Add the Anthropic configuraiton to the `applicaiton.properties`:
+Add the Anthropic configuration to the `application.properties`:
 
 ```
 spring.ai.anthropic.api-key=${ANTHROPIC_API_KEY}
