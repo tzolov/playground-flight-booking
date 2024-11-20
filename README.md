@@ -122,7 +122,7 @@ Add to the POM the Spring AI Anthropic Claude and Onnx Transfomer Embedding boot
 </dependency>
 ```
 
-Add the Anthropic configuraiton to the `applicaiton.properties`:
+Add the Anthropic configuration to the `application.properties`:
 
 ```
 spring.ai.anthropic.api-key=${ANTHROPIC_API_KEY}
