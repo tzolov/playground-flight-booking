@@ -19,6 +19,24 @@ This app shows how you can use [Spring AI](https://github.com/spring-projects/sp
 
 Run the app by running `Application.java` in your IDE or `mvn` in the command line.
 
+### With Ollama
+
+Add to the POM the Spring AI Ollama boot starter:
+
+```xml
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
+</dependency>
+```
+
+Add the OpenAI configuration to the `application.properties`:
+
+```
+spring.ai.ollama.embedding.options.model=mistral
+spring.ai.ollama.chat.options.model=mistral
+```
+
 ### With OpenAI Chat
 
 Add to the POM the Spring AI Open AI boot starter:
