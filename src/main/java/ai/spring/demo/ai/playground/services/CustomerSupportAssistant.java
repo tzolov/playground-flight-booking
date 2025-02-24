@@ -21,7 +21,7 @@ import java.util.Map;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -37,9 +37,9 @@ import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvis
 public class CustomerSupportAssistant {
 
 	private final ChatClient chatClient;
-	
+
 	// @formatter:off
-	public CustomerSupportAssistant(ChatClient.Builder chatClientBuilder, 
+	public CustomerSupportAssistant(ChatClient.Builder chatClientBuilder, BookingTools bookingTools,
 		VectorStore vectorStore, ChatMemory chatMemory) {
 
 		
@@ -57,10 +57,15 @@ public class CustomerSupportAssistant {
 						Use the provided functions to fetch booking details, change bookings, and cancel bookings.		
 					""")	
 				.defaultAdvisors(
-						new PromptChatMemoryAdvisor(chatMemory), // Conversation Memory
-						new QuestionAnswerAdvisor(vectorStore) // RAG
-				)						
-				.defaultFunctions("getBookingDetails", "changeBooking", "cancelBooking", "changeSeat") // FUNCTION CALLING
+						new MessageChatMemoryAdvisor(chatMemory), // Conversation Memory
+						new QuestionAnswerAdvisor(vectorStore)
+						// RetrievalAugmentationAdvisor.builder()
+						// 	.documentRetriever(VectorStoreDocumentRetriever.builder().vectorStore(vectorStore).build())
+						// 	.queryAugmenter(ContextualQueryAugmenter.builder().allowEmptyContext(true).build())
+						// 	.build() // RAG
+				)	
+				.defaultTools(bookingTools) // Tool CALLING
+
 				.build();
 	}
 

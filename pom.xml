@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.4</version>
+		<version>3.3.5</version>
 		<relativePath />
 		<!-- lookup parent from repository -->
 	</parent>
@@ -18,8 +18,9 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<vaadin.version>24.4.13</vaadin.version>
-		<spring-ai.version>1.0.0-SNAPSHOT</spring-ai.version>
+		<vaadin.version>24.5.5</vaadin.version>
+		<!-- <vaadin.version>24.4.17</vaadin.version> -->
+		<spring-ai.version>1.0.0-M6</spring-ai.version>
 	</properties>
 
 	<dependencyManagement>

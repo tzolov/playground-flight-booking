@@ -1,119 +1,80 @@
 package ai.spring.demo.ai.playground.services;
 
-import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
+import ai.spring.demo.ai.playground.data.BookingDetails;
+import ai.spring.demo.ai.playground.services.SeatChangeQueue.SeatChangeRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.ai.chat.model.ToolContext;
+import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Description;
 import org.springframework.core.NestedExceptionUtils;
+import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-import ai.spring.demo.ai.playground.data.BookingStatus;
-import ai.spring.demo.ai.playground.services.SeatChangeQueue.SeatChangeRequest;
-
-@Configuration
+@Service
 public class BookingTools {
 
 	private static final Logger logger = LoggerFactory.getLogger(BookingTools.class);
 
-	@Autowired
-	private FlightBookingService flightBookingService;
+	private final FlightBookingService flightBookingService;
+
+	private final SeatChangeQueue shared;
 
 	@Autowired
-	private SeatChangeQueue shared;
-
-	public record BookingDetailsRequest(String bookingNumber, String firstName, String lastName) {
+	public BookingTools(FlightBookingService flightBookingService, SeatChangeQueue shared) {
+		this.flightBookingService = flightBookingService;
+		this.shared = shared;
 	}
 
-	public record ChangeBookingDatesRequest(String bookingNumber, String firstName, String lastName, String date,
-			String from, String to) {
+	@Tool(description = "Get booking details")
+	public BookingDetails getBookingDetails(String bookingNumber, String firstName, String lastName,
+			ToolContext toolContext) {
+		try {
+			return flightBookingService.getBookingDetails(bookingNumber, firstName, lastName);
+		} catch (Exception e) {
+			logger.warn("Booking details: {}", NestedExceptionUtils.getMostSpecificCause(e).getMessage());
+			return new BookingDetails(bookingNumber, firstName, lastName, null, null,
+					null, null, null, null);
+		}
 	}
 
-	public record CancelBookingRequest(String bookingNumber, String firstName, String lastName) {
+	@Tool(description = "Change booking dates")
+	public void changeBooking(String bookingNumber, String firstName, String lastName, String newDate, String from,
+			String to, ToolContext toolContext) {
+		flightBookingService.changeBooking(bookingNumber, firstName, lastName, newDate, from, to);
+	};
+
+	@Tool(description = "Cancel booking")
+	public void cancelBooking(String bookingNumber, String firstName, String lastName, ToolContext toolContext) {
+		flightBookingService.cancelBooking(bookingNumber, firstName, lastName);
 	}
 
-	// @ formatter:off
-	@JsonInclude(Include.NON_NULL)
-	public record BookingDetails(String bookingNumber, String firstName, String lastName, LocalDate date,
-			BookingStatus bookingStatus, String from, String to, String seatNumber, String bookingClass) {
-	}
-	// @ formatter:on
+	@Tool(description = "Change seat")
+	public void changeSeat(String bookingNumber, String firstName, String lastName, ToolContext toolContext) {
 
-	@Bean
-	@Description("Get booking details")
-	public Function<BookingDetailsRequest, BookingDetails> getBookingDetails() {
-		return request -> {
-			try {
-				return flightBookingService.getBookingDetails(request.bookingNumber(), request.firstName(),
-						request.lastName());
-			}
-			catch (Exception e) {
-				logger.warn("Booking details: {}", NestedExceptionUtils.getMostSpecificCause(e).getMessage());
-				return new BookingDetails(request.bookingNumber(), request.firstName(), request.lastName, null, null,
-						null, null, null, null);
-			}
-		};
-	}
+		System.out.println("Changing seat for " + bookingNumber + " to a better one");
 
-	@Bean
-	@Description("Change booking dates")
-	public Function<ChangeBookingDatesRequest, String> changeBooking() {
-		return request -> {
-			flightBookingService.changeBooking(request.bookingNumber(), request.firstName(), request.lastName(),
-					request.date(), request.from(), request.to());
-			return "";
-		};
-	}
+		var chatId = toolContext.getContext().get("chat_id").toString();
 
-	@Bean
-	@Description("Cancel booking")
-	public Function<CancelBookingRequest, String> cancelBooking() {
-		return request -> {
-			flightBookingService.cancelBooking(request.bookingNumber(), request.firstName(), request.lastName());
-			return "";
-		};
-	}
+		CompletableFuture<String> future = new CompletableFuture<>();
+		shared.getPendingRequests().put(chatId, future);
 
-	public record LLMSeatChangeRequest(String bookingNumber, String firstName, String lastName) {
-	}
+		shared.getSeatChangeRequests().values().forEach(sink -> sink.tryEmitNext(new SeatChangeRequest(chatId)));
 
-	@Bean
-	@Description("Change seat")
-	public BiFunction<LLMSeatChangeRequest, ToolContext, String> changeSeat() {
-		return (request, toolContext) -> {
-			System.out.println("Changing seat for " + request.bookingNumber() + " to a better one");
+		// Wait for the seat selection to complete
+		String seat;
+		try {
+			// This will block until completeSeatChangeRequest is called
+			seat = future.get();
+		} catch (Exception e) {
+			throw new RuntimeException("Seat selection interrupted", e);
+		}
 
-			var chatId = toolContext.getContext().get("chat_id").toString();
-
-			CompletableFuture<String> future = new CompletableFuture<>();
-			shared.getPendingRequests().put(chatId, future);
-
-			shared.getSeatChangeRequests().values().forEach(sink -> sink.tryEmitNext(new SeatChangeRequest(chatId)));
-
-			// Wait for the seat selection to complete
-			String seat;
-			try {
-				// This will block until completeSeatChangeRequest is called
-				seat = future.get();
-			}
-			catch (Exception e) {
-				throw new RuntimeException("Seat selection interrupted", e);
-			}
-
-			// Proceed with changing the seat
-			flightBookingService.changeSeat(request.bookingNumber(), request.firstName(), request.lastName(), seat);
-
-			return "Seat changed successfully";
-		};
+		// Proceed with changing the seat
+		flightBookingService.changeSeat(bookingNumber, firstName, lastName, seat);
 	}
 
 }

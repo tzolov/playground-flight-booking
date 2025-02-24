@@ -5,7 +5,7 @@ import com.vaadin.hilla.BrowserCallable;
 
 import java.util.List;
 
-import ai.spring.demo.ai.playground.services.BookingTools.BookingDetails;
+import ai.spring.demo.ai.playground.data.BookingDetails;
 import ai.spring.demo.ai.playground.services.FlightBookingService;
 
 @BrowserCallable
