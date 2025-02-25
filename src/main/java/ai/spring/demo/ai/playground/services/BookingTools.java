@@ -1,81 +1,47 @@
 package ai.spring.demo.ai.playground.services;
 
-import java.time.LocalDate;
-import java.util.function.Function;
-
-import ai.spring.demo.ai.playground.data.BookingStatus;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import ai.spring.demo.ai.playground.data.BookingDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.ai.chat.model.ToolContext;
+import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Description;
 import org.springframework.core.NestedExceptionUtils;
+import org.springframework.stereotype.Service;
 
-@Configuration
+@Service 
 public class BookingTools {
 
     private static final Logger logger = LoggerFactory.getLogger(BookingTools.class);
 
+    private final FlightBookingService flightBookingService;
+
     @Autowired
-    private FlightBookingService flightBookingService;
-
-    public record BookingDetailsRequest(String bookingNumber, String firstName, String lastName) {
+    public BookingTools(FlightBookingService flightBookingService) {
+        this.flightBookingService = flightBookingService;
     }
 
-    public record ChangeBookingDatesRequest(String bookingNumber, String firstName, String lastName, String date,
-            String from, String to) {
+    @Tool(description = "Get booking details")
+    public BookingDetails getBookingDetails(String bookingNumber, String firstName, String lastName,
+            ToolContext toolContext) {
+        try {
+            return flightBookingService.getBookingDetails(bookingNumber, firstName, lastName);
+        } catch (Exception e) {
+            logger.warn("Booking details: {}", NestedExceptionUtils.getMostSpecificCause(e).getMessage());
+            return new BookingDetails(bookingNumber, firstName, lastName, null, null,
+                    null, null, null);
+        }
     }
 
-    public record CancelBookingRequest(String bookingNumber, String firstName, String lastName) {
-    }
+    @Tool(description = "Change booking dates")
+    public void changeBooking(String bookingNumber, String firstName, String lastName, String newDate, String from,
+            String to, ToolContext toolContext) {
+        flightBookingService.changeBooking(bookingNumber, firstName, lastName, newDate, from, to);
+    };
 
-    @JsonInclude(Include.NON_NULL)
-    public record BookingDetails(String bookingNumber,
-            String firstName,
-            String lastName,
-            LocalDate date,
-            BookingStatus bookingStatus,
-            String from,
-            String to,
-            String bookingClass) {
-    }
-
-    @Bean
-    @Description("Get booking details")
-    public Function<BookingDetailsRequest, BookingDetails> getBookingDetails() {
-        return request -> {
-            try {
-                return flightBookingService.getBookingDetails(request.bookingNumber(), request.firstName(),
-                        request.lastName());
-            }
-            catch (Exception e) {
-                logger.warn("Booking details: {}", NestedExceptionUtils.getMostSpecificCause(e).getMessage());
-                return new BookingDetails(request.bookingNumber(), request.firstName(), request.lastName,
-                        null, null, null, null, null);
-            }
-        };
-    }
-
-    @Bean
-    @Description("Change booking dates")
-    public Function<ChangeBookingDatesRequest, String> changeBooking() {
-        return request -> {
-            flightBookingService.changeBooking(request.bookingNumber(), request.firstName(), request.lastName(),
-                    request.date(), request.from(), request.to());
-            return "";
-        };
-    }
-
-    @Bean
-    @Description("Cancel booking")
-    public Function<CancelBookingRequest, String> cancelBooking() {
-        return request -> {
-            flightBookingService.cancelBooking(request.bookingNumber(), request.firstName(), request.lastName());
-            return "";
-        };
+    @Tool(description = "Cancel booking")
+    public void cancelBooking(String bookingNumber, String firstName, String lastName, ToolContext toolContext) {
+        flightBookingService.cancelBooking(bookingNumber, firstName, lastName);
     }
 }

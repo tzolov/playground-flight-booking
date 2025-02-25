@@ -126,7 +126,6 @@ Add the Anthropic configuration to the `application.properties`:
 
 ```
 spring.ai.anthropic.api-key=${ANTHROPIC_API_KEY}
-spring.ai.openai.chat.options.model=llama3-70b-8192
 spring.ai.anthropic.chat.options.model=claude-3-5-sonnet-20240620
 ```
 

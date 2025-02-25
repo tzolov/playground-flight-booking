@@ -39,7 +39,7 @@ public class CustomerSupportAssistant {
 
 	private final ChatClient chatClient;
 
-	public CustomerSupportAssistant(ChatClient.Builder modelBuilder, VectorStore vectorStore, ChatMemory chatMemory) {
+	public CustomerSupportAssistant(ChatClient.Builder modelBuilder, VectorStore vectorStore, ChatMemory chatMemory, BookingTools bookingTools) {
 
 		// @formatter:off
 		this.chatClient = modelBuilder
@@ -60,13 +60,17 @@ public class CustomerSupportAssistant {
 						new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
 						// new VectorStoreChatMemoryAdvisor(vectorStore)),
 					
-						new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()), // RAG
+						new QuestionAnswerAdvisor(vectorStore, SearchRequest.builder().build()), // RAG
 						// new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()
 						// 	.withFilterExpression("'documentType' == 'terms-of-service' && region in ['EU', 'US']")),
+						// RetrievalAugmentationAdvisor.builder()
+						// 	.documentRetriever(VectorStoreDocumentRetriever.builder().vectorStore(vectorStore).build())
+						// 	.queryAugmenter(ContextualQueryAugmenter.builder().allowEmptyContext(true).build())
+						// 	.build() // RAG
 						
 						new LoggingAdvisor())
 						
-				.defaultFunctions("getBookingDetails", "changeBooking", "cancelBooking") // FUNCTION CALLING
+				.defaultTools(bookingTools) // FUNCTION CALLING
 
 				.build();
 		// @formatter:on
