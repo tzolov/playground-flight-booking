@@ -22,7 +22,7 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
@@ -57,15 +57,11 @@ public class CustomerSupportAssistant {
 						Use the provided functions to fetch booking details, change bookings, and cancel bookings.		
 					""")	
 				.defaultAdvisors(
-						new MessageChatMemoryAdvisor(chatMemory), // Conversation Memory
-						new QuestionAnswerAdvisor(vectorStore)
-						// RetrievalAugmentationAdvisor.builder()
-						// 	.documentRetriever(VectorStoreDocumentRetriever.builder().vectorStore(vectorStore).build())
-						// 	.queryAugmenter(ContextualQueryAugmenter.builder().allowEmptyContext(true).build())
-						// 	.build() // RAG
+					new MessageChatMemoryAdvisor(chatMemory)
+					,
+					new QuestionAnswerAdvisor(vectorStore)
 				)	
-				.defaultTools(bookingTools) // Tool CALLING
-
+				.defaultTools(bookingTools)
 				.build();
 	}
 

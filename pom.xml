@@ -20,7 +20,7 @@
 		<java.version>21</java.version>
 		<vaadin.version>24.6.5</vaadin.version>
 		<!-- <vaadin.version>24.4.17</vaadin.version> -->
-		<spring-ai.version>1.0.0-M6</spring-ai.version>
+		<spring-ai.version>1.0.0-SNAPSHOT</spring-ai.version>
 	</properties>
 
 	<dependencyManagement>
@@ -47,8 +47,12 @@
 		<!-- OpenAI (Used also for Groq access) -->
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+			<artifactId>spring-ai-starter-model-openai</artifactId>
 		</dependency>
+		<!-- <dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-starter-model-anthropic</artifactId>
+		</dependency> -->
 
 		<!-- Standalone Embedding Model. To be used in combination with the Athropic, Groq, Vertex
 		Geminie chat models -->
@@ -96,8 +100,19 @@
 
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-chroma-store-spring-boot-starter</artifactId>
+			<artifactId>spring-ai-starter-vector-store-chroma</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-advisors-vector-store</artifactId>
+		</dependency>
+
+		<!-- <dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-starter-mcp-client</artifactId>
+		</dependency> -->
+
 
 		<!-- Vaadin -->
 		<dependency>
