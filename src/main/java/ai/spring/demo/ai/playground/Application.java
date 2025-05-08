@@ -1,7 +1,7 @@
 package ai.spring.demo.ai.playground;
 
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.reader.TextReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -40,7 +40,7 @@ public class Application implements AppShellConfigurator {
 
 	@Bean
 	public ChatMemory chatMemory() {
-		return new InMemoryChatMemory();
+		return MessageWindowChatMemory.builder().build();
 	}
 
 	// Optional suppress the actuator server observations. This hides the actuator

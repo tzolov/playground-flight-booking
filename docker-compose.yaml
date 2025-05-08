@@ -1,7 +1,7 @@
 services:
 
     chroma:
-      image: ghcr.io/chroma-core/chroma:latest
+      image: ghcr.io/chroma-core/chroma:1.0.0
       restart: always
       environment:
         - IS_PERSISTENT=TRUE
