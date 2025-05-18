@@ -18,18 +18,17 @@ package ai.spring.demo.ai.playground.services;
 
 import java.time.LocalDate;
 
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
 
 /**
  * * @author Christian Tzolov
@@ -57,10 +56,12 @@ public class CustomerSupportAssistant {
 						Today is {current_date}.
 					""")
 				.defaultAdvisors(
-						new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
+						PromptChatMemoryAdvisor.builder(chatMemory)
+								.build(),
 						// new VectorStoreChatMemoryAdvisor(vectorStore)),
-					
-						new QuestionAnswerAdvisor(vectorStore, SearchRequest.builder().build()), // RAG
+						QuestionAnswerAdvisor.builder(vectorStore)
+								.searchRequest(SearchRequest.builder().build())
+								.build(), // RAG
 						// new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()
 						// 	.withFilterExpression("'documentType' == 'terms-of-service' && region in ['EU', 'US']")),
 						// RetrievalAugmentationAdvisor.builder()
@@ -68,7 +69,7 @@ public class CustomerSupportAssistant {
 						// 	.queryAugmenter(ContextualQueryAugmenter.builder().allowEmptyContext(true).build())
 						// 	.build() // RAG
 						
-						new LoggingAdvisor())
+						new SimpleLoggerAdvisor())
 						
 				.defaultTools(bookingTools) // FUNCTION CALLING
 
@@ -82,8 +83,9 @@ public class CustomerSupportAssistant {
 				.system(s -> s.param("current_date", LocalDate.now().toString()))
 				.user(userMessageContent)
 				.advisors(a -> a
-						.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-						.param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
+						.param(ChatMemory.CONVERSATION_ID, chatId)
+						//.param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100)
+						)
 				.stream().content();
 	}
 }
