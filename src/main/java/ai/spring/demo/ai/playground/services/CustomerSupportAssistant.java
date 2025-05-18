@@ -27,9 +27,6 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
-
 /**
  * * @author Christian Tzolov
  */
@@ -57,9 +54,9 @@ public class CustomerSupportAssistant {
 						Use the provided functions to fetch booking details, change bookings, and cancel bookings.		
 					""")	
 				.defaultAdvisors(
-					new MessageChatMemoryAdvisor(chatMemory)
+					MessageChatMemoryAdvisor.builder(chatMemory).build()
 					,
-					new QuestionAnswerAdvisor(vectorStore)
+					QuestionAnswerAdvisor.builder(vectorStore).build()
 				)	
 				.defaultTools(bookingTools)
 				.build();
@@ -70,8 +67,8 @@ public class CustomerSupportAssistant {
 		return this.chatClient.prompt()
 			.user(userMessage)
 			.toolContext(Map.of("chat_id", chatId))
-			.advisors(a -> a.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-				.param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
+			.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, chatId))
+				// .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
 			.stream()
 			.content();	
 	}
