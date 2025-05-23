@@ -67,7 +67,6 @@ public class CustomerSupportAssistant {
 		return this.chatClient.prompt()
 			.user(userMessage)
 			.tools(additionalTools)
-			.toolContext(Map.of("chat_id", chatId))
 			.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, chatId))
 			.stream()
 			.content();	

@@ -22,8 +22,7 @@ public class BookingTools {
 	}
 
 	@Tool(description = "Get booking details")
-	public BookingDetails getBookingDetails(String bookingNumber, String firstName, String lastName,
-			ToolContext toolContext) {
+	public BookingDetails getBookingDetails(String bookingNumber, String firstName, String lastName) {
 		try {
 			return flightBookingService.getBookingDetails(bookingNumber, firstName, lastName);
 		} catch (Exception e) {
@@ -35,12 +34,12 @@ public class BookingTools {
 
 	@Tool(description = "Change booking dates")
 	public void changeBooking(String bookingNumber, String firstName, String lastName, String newDate, String from,
-			String to, ToolContext toolContext) {
+			String to) {
 		flightBookingService.changeBooking(bookingNumber, firstName, lastName, newDate, from, to);
 	};
 
 	@Tool(description = "Cancel booking")
-	public void cancelBooking(String bookingNumber, String firstName, String lastName, ToolContext toolContext) {
+	public void cancelBooking(String bookingNumber, String firstName, String lastName) {
 		flightBookingService.cancelBooking(bookingNumber, firstName, lastName);
 	}
 
