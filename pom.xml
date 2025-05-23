@@ -18,9 +18,9 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<vaadin.version>24.6.5</vaadin.version>
+		<vaadin.version>24.8.0.alpha7</vaadin.version>
 		<!-- <vaadin.version>24.4.17</vaadin.version> -->
-		<spring-ai.version>1.0.0-SNAPSHOT</spring-ai.version>
+		<spring-ai.version>1.0.0</spring-ai.version>
 	</properties>
 
 	<dependencyManagement>

@@ -1,5 +1,6 @@
 package ai.spring.demo.ai.playground;
 
+import com.vaadin.flow.component.page.Push;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.reader.TextReader;
@@ -20,6 +21,7 @@ import io.micrometer.observation.ObservationPredicate;
 
 @SpringBootApplication
 @Theme(value = "customer-support-agent")
+@Push
 public class Application implements AppShellConfigurator {
 
 	public static void main(String[] args) {
