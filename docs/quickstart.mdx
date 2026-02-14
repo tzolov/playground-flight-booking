@@ -1,0 +1,71 @@
+---
+title: "Quickstart"
+description: "Get the Funnair customer support agent running locally"
+---
+
+## Requirements
+
+- Java 21+
+- [Chroma](https://www.trychroma.com/) vector store running locally on port 8000
+- An API key for your chosen chat provider (OpenAI by default)
+
+## Step 1: Start Chroma
+
+The application uses Chroma as a vector store for RAG over the airline's terms of service. Start it with Docker:
+
+```bash
+docker run -d --name chroma -p 8000:8000 chromadb/chroma
+```
+
+## Step 2: Set your API key
+
+By default the application uses OpenAI GPT-4o. Export your API key:
+
+```bash
+export OPENAI_API_KEY=your-key-here
+```
+
+<Tip>See [Chat Providers](/chat-providers) to use Anthropic Claude, VertexAI Gemini, Azure OpenAI, Groq, or Mistral instead.</Tip>
+
+## Step 3: Run the application
+
+Run from your IDE by launching `Application.java`, or use Maven:
+
+```bash
+./mvnw spring-boot:run
+```
+
+The application will:
+1. Load the airline terms of service into the Chroma vector store
+2. Initialize 5 sample bookings with demo data
+3. Start the Vaadin web UI
+
+Open [http://localhost:8080](http://localhost:8080) to interact with the Funnair customer support agent.
+
+## Demo data
+
+The application starts with 5 sample bookings:
+
+| Booking # | Customer | Class |
+|---|---|---|
+| 101 | John Doe | Random |
+| 102 | Jane Smith | Random |
+| 103 | Bob Johnson | Random |
+| 104 | Alice Williams | Random |
+| 105 | Charlie Brown | Random |
+
+Try asking the assistant: *"Can you look up booking 101 for John Doe?"*
+
+## Next steps
+
+<CardGroup cols={2}>
+
+<Card title="Chat Providers" icon="comments" href="/chat-providers">
+  Switch to Anthropic Claude, VertexAI Gemini, or other providers.
+</Card>
+
+<Card title="Build & Deploy" icon="hammer" href="/development">
+  Build a production JAR or set up observability.
+</Card>
+
+</CardGroup>

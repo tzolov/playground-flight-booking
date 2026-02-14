@@ -1,0 +1,72 @@
+---
+title: "Build & Deploy"
+description: "Build the application, run supporting services, and set up observability"
+---
+
+## Build JAR
+
+Build the application with the production profile:
+
+```bash
+./mvnw clean install -Pproduction
+```
+
+Run the built JAR:
+
+```bash
+java -jar ./target/playground-flight-booking-0.0.1-SNAPSHOT.jar
+```
+
+## Supporting services
+
+### Chroma vector store
+
+The application requires a running Chroma instance for RAG over the airline terms of service:
+
+```bash
+docker run -d --name chroma -p 8000:8000 chromadb/chroma
+```
+
+On startup, the application automatically loads `terms-of-service.txt` into Chroma using a `TokenTextSplitter`.
+
+## Observability
+
+The application includes a full observability stack. All components are optional but pre-configured.
+
+### Zipkin (distributed tracing)
+
+```bash
+docker run -d --name zipkin -p 9411:9411 openzipkin/zipkin
+```
+
+Traces are exported to `http://localhost:9411/api/v2/spans` with 100% sampling. View traces at [http://localhost:9411](http://localhost:9411).
+
+### Prometheus (metrics)
+
+Metrics are exposed at `/actuator/prometheus`. The application publishes histograms for:
+
+- AI chat operations
+- Vector store operations
+- HTTP server requests
+
+### Loki (log aggregation)
+
+Logs are shipped to Loki via the Logback appender. Configure the Loki endpoint in `logback-spring.xml`.
+
+## Configuration reference
+
+Key properties in `application.properties`:
+
+```properties
+# Application
+spring.application.name=flight-booking-assistant
+spring.threads.virtual.enabled=true
+
+# Vector store
+spring.ai.vectorstore.chroma.url=http://localhost:8000
+spring.ai.vectorstore.chroma.initialize-schema=true
+
+# Observability
+management.tracing.sampling.probability=1.0
+management.zipkin.tracing.endpoint=http://localhost:9411/api/v2/spans
+```

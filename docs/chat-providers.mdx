@@ -1,0 +1,135 @@
+---
+title: "Chat Providers"
+description: "Configure different AI chat providers for the application"
+---
+
+The application ships with OpenAI as the default provider. You can switch to any of the providers below by updating your `pom.xml` dependencies and `application.properties`.
+
+## OpenAI (default)
+
+This is the active configuration. The POM already includes:
+
+```xml
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-starter-model-openai</artifactId>
+</dependency>
+```
+
+Configuration in `application.properties`:
+
+```properties
+spring.ai.openai.api-key=${OPENAI_API_KEY}
+spring.ai.openai.chat.options.model=gpt-4o
+```
+
+## Anthropic Claude
+
+Replace the OpenAI starter with the Anthropic starter in your POM:
+
+```xml
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-starter-model-anthropic</artifactId>
+</dependency>
+```
+
+Configuration in `application.properties`:
+
+```properties
+spring.ai.anthropic.api-key=${ANTHROPIC_API_KEY}
+spring.ai.anthropic.chat.options.model=claude-3-7-sonnet-20250219
+```
+
+<Note>You will also need a separate embedding model since Anthropic does not provide one. Add the Transformers starter for local embeddings:
+```xml
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-transformers-spring-boot-starter</artifactId>
+</dependency>
+```
+</Note>
+
+## VertexAI Gemini
+
+Replace the OpenAI starter with the VertexAI Gemini and Transformers starters:
+
+```xml
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-vertex-ai-gemini-spring-boot-starter</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-transformers-spring-boot-starter</artifactId>
+</dependency>
+```
+
+Configuration in `application.properties`:
+
+```properties
+spring.ai.vertex.ai.gemini.project-id=${VERTEX_AI_GEMINI_PROJECT_ID}
+spring.ai.vertex.ai.gemini.location=${VERTEX_AI_GEMINI_LOCATION}
+spring.ai.vertex.ai.gemini.chat.options.model=gemini-1.5-pro-001
+```
+
+## Azure OpenAI
+
+Replace the OpenAI starter with the Azure OpenAI starter:
+
+```xml
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-azure-openai-spring-boot-starter</artifactId>
+</dependency>
+```
+
+Configuration in `application.properties`:
+
+```properties
+spring.ai.azure.openai.api-key=${AZURE_OPENAI_API_KEY}
+spring.ai.azure.openai.endpoint=${AZURE_OPENAI_ENDPOINT}
+spring.ai.azure.openai.chat.options.deployment-name=gpt-4o
+```
+
+## Groq
+
+Groq is compatible with the OpenAI API. Use the OpenAI starter with a custom base URL:
+
+```xml
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-starter-model-openai</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-transformers-spring-boot-starter</artifactId>
+</dependency>
+```
+
+Configuration in `application.properties`:
+
+```properties
+spring.ai.openai.api-key=${GROQ_API_KEY}
+spring.ai.openai.base-url=https://api.groq.com/openai
+spring.ai.openai.chat.options.model=llama3-70b-8192
+```
+
+## Mistral AI
+
+Replace the OpenAI starter with the Mistral AI starter:
+
+```xml
+<dependency>
+    <groupId>org.springframework.ai</groupId>
+    <artifactId>spring-ai-mistral-ai-spring-boot-starter</artifactId>
+</dependency>
+```
+
+Configuration in `application.properties`:
+
+```properties
+spring.ai.mistralai.api-key=${MISTRAL_AI_API_KEY}
+spring.ai.mistralai.chat.options.model=mistral-small-latest
+```

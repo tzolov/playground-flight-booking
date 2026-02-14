@@ -1,0 +1,60 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "palm",
+  "name": "Flight Booking AI",
+  "colors": {
+    "primary": "#6DB33F",
+    "light": "#6DB33F",
+    "dark": "#3B7D1A"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": [
+              "index",
+              "quickstart",
+              "chat-providers",
+              "development"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Spring AI",
+          "href": "https://github.com/spring-projects/spring-ai",
+          "icon": "leaf"
+        },
+        {
+          "anchor": "Source Code",
+          "href": "https://github.com/marcushellberg/java-ai-playground",
+          "icon": "github"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Spring AI",
+        "href": "https://github.com/spring-projects/spring-ai"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/spring-projects/spring-ai"
+    }
+  }
+}

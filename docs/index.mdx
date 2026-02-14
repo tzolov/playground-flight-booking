@@ -1,0 +1,57 @@
+---
+title: "Funnair Customer Support Agent"
+description: "A Spring AI-powered flight booking assistant demonstrating RAG, function calling, and streaming chat with a Vaadin UI"
+---
+
+A Spring AI re-implementation of [java-ai-playground](https://github.com/marcushellberg/java-ai-playground).
+
+This application is an AI-powered customer support agent for a fictional airline called **Funnair**. It demonstrates how to use [Spring AI](https://github.com/spring-projects/spring-ai) to build an interactive chat assistant that can:
+
+- **Retrieve booking details** — look up flights by booking number and customer name
+- **Change bookings** — modify dates and destinations with business rule enforcement
+- **Cancel bookings** — process cancellations respecting time constraints
+- **Select seats** — interactive seat picker via a Vaadin dialog
+- **Answer policy questions** — retrieval augmented generation (RAG) over airline terms of service
+
+<Frame>
+  <img src="/images/diagram.jpg" alt="Architecture diagram" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+## Key technologies
+
+| Component | Technology |
+|---|---|
+| AI framework | Spring AI with OpenAI (GPT-4o) |
+| Vector store | Chroma (for RAG) |
+| Web UI | Vaadin Flow with streaming chat |
+| Observability | Micrometer, Zipkin, Prometheus, Loki |
+| Runtime | Java 21 with virtual threads |
+
+## AI tools exposed
+
+The assistant has access to these functions via Spring AI function calling:
+
+| Tool | Description |
+|---|---|
+| `getBookingDetails` | Retrieves booking info by number + customer name |
+| `changeBooking` | Changes flight date, origin, and destination |
+| `cancelBooking` | Cancels a booking (48-hour restriction) |
+| `changeSeatNumber` | Opens an interactive seat selector dialog |
+
+## Get started
+
+<CardGroup cols={2}>
+
+<Card title="Quickstart" icon="rocket" href="/quickstart">
+  Set up requirements and run the application.
+</Card>
+
+<Card title="Chat Providers" icon="comments" href="/chat-providers">
+  Configure OpenAI, Anthropic, VertexAI, Azure, Groq, or Mistral.
+</Card>
+
+<Card title="Build & Deploy" icon="hammer" href="/development">
+  Build a JAR and run supporting services.
+</Card>
+
+</CardGroup>
